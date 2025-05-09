@@ -1,0 +1,8 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "jsx": "preserve",
+        "jsxImportSource": "@vercel/og"
+    },
+    "include": ["src/routes/api/og/+server.ts"]
+}

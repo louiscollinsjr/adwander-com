@@ -10,7 +10,9 @@
 		"sourceMap": true,
 		"strict": true,
 		"moduleResolution": "bundler",
-		"types": ["svelte"]
+		"types": ["svelte"],
+		"jsx": "react",
+		"jsxImportSource": "@vercel/og"
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.svelte"],
 	"exclude": ["node_modules", ".svelte-kit"]

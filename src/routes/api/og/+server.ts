@@ -1,0 +1,146 @@
+// Unified OG endpoint: Uses Satori/Resvg for local dev, Vercel OG for production/edge
+
+export const GET = async ({ url }: { url: URL }) => {
+    const title = url.searchParams.get('title') || 'Adwander - Exploring Online Experiments';
+    const description = url.searchParams.get('description') || 'Adwander is a base for various online experiments and passive income explorations.';
+
+    // Use Vercel OG (JSX) if running on Vercel Edge
+    if (process.env.VERCEL === '1' || process.env.VERCEL) {
+        // Only import in prod/edge
+        // @ts-ignore
+        const { ImageResponse } = await import('@vercel/og');
+        return new ImageResponse(
+            {
+                type: 'div',
+                props: {
+                    style: {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: '#000',
+                        color: '#fff',
+                        padding: '40px',
+                        textAlign: 'center',
+                        fontFamily: 'system-ui, sans-serif',
+                        position: 'relative',
+                    },
+                    children: [
+                        {
+                            type: 'div',
+                            props: {
+                                style: { fontSize: 60, fontWeight: 'bold', marginBottom: 20 },
+                                children: title,
+                            },
+                        },
+                        {
+                            type: 'div',
+                            props: {
+                                style: { fontSize: 30, opacity: 0.9 },
+                                children: description,
+                            },
+                        },
+                        {
+                            type: 'div',
+                            props: {
+                                style: {
+                                    position: 'absolute',
+                                    bottom: 40,
+                                    left: 0,
+                                    right: 0,
+                                    textAlign: 'center',
+                                    fontSize: 20,
+                                    opacity: 0.7,
+                                },
+                                children: 'adwander.com',
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                width: 1200,
+                height: 630,
+            }
+        );
+    }
+
+    // Local fallback: Satori + Resvg
+    const satori = (await import('satori')).default;
+    const { Resvg } = await import('@resvg/resvg-js');
+
+    const svg = await satori(
+        {
+            type: 'div',
+            props: {
+                style: {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '1200px',
+                    height: '630px',
+                    backgroundColor: '#000',
+                    color: '#fff',
+                    padding: '40px',
+                    textAlign: 'center',
+                    fontFamily: 'system-ui, sans-serif',
+                    position: 'relative',
+                },
+                children: [
+                    {
+                        type: 'div',
+                        props: {
+                            style: { fontSize: 60, fontWeight: 'bold', marginBottom: 20 },
+                            children: title,
+                        },
+                    },
+                    {
+                        type: 'div',
+                        props: {
+                            style: { fontSize: 30, opacity: 0.9 },
+                            children: description,
+                        },
+                    },
+                    {
+                        type: 'div',
+                        props: {
+                            style: {
+                                position: 'absolute',
+                                bottom: 40,
+                                left: 0,
+                                right: 0,
+                                textAlign: 'center',
+                                fontSize: 20,
+                                opacity: 0.7,
+                            },
+                            children: 'adwander.com',
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            width: 1200,
+            height: 630,
+            fonts: [],
+        }
+    );
+
+    const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+    const pngData = resvg.render();
+    const pngBuffer = pngData.asPng();
+
+    return new Response(pngBuffer, {
+        headers: {
+            'Content-Type': 'image/png',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+    });
+};
+
+// Only export edge config for Vercel
+export const config = process.env.VERCEL ? { runtime: 'edge' } as const : undefined;
+
