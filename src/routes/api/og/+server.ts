@@ -94,5 +94,5 @@ export const GET = async ({ url }: { url: URL }) => {
 };
 
 export const config = {
-  runtime: 'nodejs'
+  runtime: 'nodejs18.x'
 };
