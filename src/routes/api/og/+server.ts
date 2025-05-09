@@ -93,5 +93,6 @@ export const GET = async ({ url }: { url: URL }) => {
     });
 };
 
-// Only export edge config for Vercel
-export const config = process.env.VERCEL ? { runtime: 'edge' } as const : undefined;
+export const config = {
+  runtime: 'nodejs'
+};
