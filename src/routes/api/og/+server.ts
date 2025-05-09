@@ -1,8 +1,5 @@
 // Unified OG endpoint: Uses Satori/Resvg for local dev, Vercel OG for production/edge
 
-import fs from 'fs/promises';
-import path from 'path';
-
 export const GET = async ({ url }: { url: URL }) => {
     const title = url.searchParams.get('title') || 'Adwander - Exploring Online Experiments';
     const description = url.searchParams.get('description') || 'Adwander is a base for various online experiments and passive income explorations.';
@@ -74,9 +71,12 @@ export const GET = async ({ url }: { url: URL }) => {
     const satori = (await import('satori')).default;
     const { Resvg } = await import('@resvg/resvg-js');
 
-    // Load Geist Sans font
-    const fontPath = path.resolve('static/geist-sans-latin-400-normal.ttf');
-    const fontData = await fs.readFile(fontPath);
+    // Load Geist Sans font using fetch (compatible with Edge and Node)
+    // The font is served as a static asset from /static, which is accessible at /geist-sans-latin-400-normal.ttf
+    const fontUrl = new URL('/geist-sans-latin-400-normal.ttf', url.origin).toString();
+    const fontRes = await fetch(fontUrl);
+    if (!fontRes.ok) throw new Error('Failed to load Geist Sans font');
+    const fontData = await fontRes.arrayBuffer();
 
     const svg = await satori(
         {
