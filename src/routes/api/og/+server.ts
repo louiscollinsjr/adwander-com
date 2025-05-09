@@ -4,14 +4,18 @@ export const GET = async ({ url }: { url: URL }) => {
     const title = url.searchParams.get('title') || 'Adwander - Exploring Online Experiments';
     const description = url.searchParams.get('description') || 'Adwander is a base for various online experiments and passive income explorations.';
 
-    // Use Vercel OG API if on Edge (or always, for Vercel compatibility)
-    const { ImageResponse } = await import('@vercel/og');
+    // Use Satori + Resvg for OG image generation (Node.js/serverless)
+    const satori = (await import('satori')).default;
+    const { Resvg } = await import('@resvg/resvg-js');
+
+    // Load Geist Sans font via fetch from static directory
     const fontUrl = new URL('/geist-sans-latin-400-normal.ttf', url.origin).toString();
     const fontRes = await fetch(fontUrl);
     if (!fontRes.ok) throw new Error('Failed to load Geist Sans font');
     const fontData = await fontRes.arrayBuffer();
 
-    return new ImageResponse(
+    // Generate SVG with Satori
+    const svg = await satori(
         {
             type: 'div',
             props: {
@@ -20,8 +24,8 @@ export const GET = async ({ url }: { url: URL }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
+                    width: '1200px',
+                    height: '630px',
                     backgroundColor: '#000',
                     color: '#fff',
                     padding: '40px',
@@ -75,6 +79,18 @@ export const GET = async ({ url }: { url: URL }) => {
             ],
         }
     );
+
+    // Convert SVG to PNG using Resvg
+    const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+    const pngData = resvg.render();
+    const pngBuffer = pngData.asPng();
+
+    return new Response(pngBuffer, {
+        headers: {
+            'Content-Type': 'image/png',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+    });
 };
 
 // Only export edge config for Vercel

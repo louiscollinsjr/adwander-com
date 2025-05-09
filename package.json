@@ -48,7 +48,6 @@
 		"@fontsource/geist-sans": "^5.2.5",
 		"@inlang/paraglide-sveltekit": "^0.15.5",
 		"@resvg/resvg-js": "^2.6.2",
-		"@vercel/og": "^0.6.8",
 		"satori": "^0.12.2"
 	}
 }
