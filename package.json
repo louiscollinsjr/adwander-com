@@ -46,8 +46,6 @@
 		"@fontsource-variable/inter": "^5.2.5",
 		"@fontsource-variable/roboto": "^5.2.5",
 		"@fontsource/geist-sans": "^5.2.5",
-		"@inlang/paraglide-sveltekit": "^0.15.5",
-		"@resvg/resvg-js": "^2.6.2",
-		"satori": "^0.12.2"
+		"@inlang/paraglide-sveltekit": "^0.15.5"
 	}
 }
