@@ -1,5 +1,8 @@
 // Unified OG endpoint: Uses Satori/Resvg for local dev, Vercel OG for production/edge
 
+import fs from 'fs/promises';
+import path from 'path';
+
 export const GET = async ({ url }: { url: URL }) => {
     const title = url.searchParams.get('title') || 'Adwander - Exploring Online Experiments';
     const description = url.searchParams.get('description') || 'Adwander is a base for various online experiments and passive income explorations.';
@@ -71,6 +74,10 @@ export const GET = async ({ url }: { url: URL }) => {
     const satori = (await import('satori')).default;
     const { Resvg } = await import('@resvg/resvg-js');
 
+    // Load Geist Sans font
+    const fontPath = path.resolve('static/geist-sans-latin-400-normal.ttf');
+    const fontData = await fs.readFile(fontPath);
+
     const svg = await satori(
         {
             type: 'div',
@@ -86,7 +93,7 @@ export const GET = async ({ url }: { url: URL }) => {
                     color: '#fff',
                     padding: '40px',
                     textAlign: 'center',
-                    fontFamily: 'system-ui, sans-serif',
+                    fontFamily: 'Geist Sans, system-ui, sans-serif',
                     position: 'relative',
                 },
                 children: [
@@ -125,7 +132,14 @@ export const GET = async ({ url }: { url: URL }) => {
         {
             width: 1200,
             height: 630,
-            fonts: [],
+            fonts: [
+                {
+                    name: 'Geist Sans',
+                    data: fontData,
+                    weight: 400,
+                    style: 'normal',
+                }
+            ],
         }
     );
 
